@@ -1,0 +1,46 @@
+- table:
+    schema: public
+    name: companies
+  array_relationships:
+  - name: company_investors
+    using:
+      foreign_key_constraint_on:
+        column: company_id
+        table:
+          schema: public
+          name: company_investors
+  - name: jobs
+    using:
+      foreign_key_constraint_on:
+        column: company_id
+        table:
+          schema: public
+          name: jobs
+- table:
+    schema: public
+    name: company_investors
+  object_relationships:
+  - name: company
+    using:
+      foreign_key_constraint_on: company_id
+  - name: investor
+    using:
+      foreign_key_constraint_on: investor_id
+- table:
+    schema: public
+    name: investors
+  array_relationships:
+  - name: company_investors
+    using:
+      foreign_key_constraint_on:
+        column: investor_id
+        table:
+          schema: public
+          name: company_investors
+- table:
+    schema: public
+    name: jobs
+  object_relationships:
+  - name: company
+    using:
+      foreign_key_constraint_on: company_id

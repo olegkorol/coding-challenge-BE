@@ -1,0 +1,44 @@
+version: "3.7"
+
+services:
+  react-app:
+    container_name: coding-challenge
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "./:/usr/src/app"
+      - "/usr/src/app/node_modules"
+    ports:
+      - 8000:8000
+    environment:
+      - PORT=8000
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=development
+      - REACT_APP_GRAPHQL_URL=http://localhost:8080/v1/graphql
+      - REACT_APP_REALTIME_GRAPHQL_URL=ws://localhost:8080/v1/graphql
+  postgres:
+    image: postgres:12
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgrespassword
+  graphql-engine:
+    image: hasura/graphql-engine:v1.2.1.cli-migrations-v2
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "postgres"
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      ## uncomment next line to set an admin secret
+      # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+    volumes:
+      - ./hasura/migrations:/hasura-migrations
+      - ./hasura/metadata:/hasura-metadata
+volumes:
+  db_data:

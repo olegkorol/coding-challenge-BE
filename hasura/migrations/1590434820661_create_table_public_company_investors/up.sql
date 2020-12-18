@@ -1,0 +1,1 @@
+CREATE TABLE "public"."company_investors"("company_id" integer NOT NULL, "investor_id" integer NOT NULL, PRIMARY KEY ("company_id","investor_id") , FOREIGN KEY ("company_id") REFERENCES "public"."companies"("id") ON UPDATE restrict ON DELETE restrict, FOREIGN KEY ("investor_id") REFERENCES "public"."investors"("id") ON UPDATE restrict ON DELETE restrict);
