@@ -1,15 +1,13 @@
 version: "3.7"
-
+name: coding-challenge
 services:
   react-app:
-    container_name: coding-challenge
     stdin_open: true
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: ./react-app
+    image: react-app
     volumes:
-      - "./:/usr/src/app"
-      - "/usr/src/app/node_modules"
+      - "./react-app/:/usr/src/react-app"
+      - "/usr/src/react-app/node_modules"
     ports:
       - 8000:8000
     environment:
@@ -18,6 +16,17 @@ services:
       - NODE_ENV=development
       - REACT_APP_GRAPHQL_URL=http://localhost:8080/v1/graphql
       - REACT_APP_REALTIME_GRAPHQL_URL=ws://localhost:8080/v1/graphql
+  notification-service:
+    stdin_open: true
+    build: ./notification-service
+    image: notification-service
+    volumes:
+      - "./notification-service/:/usr/src/react-app"
+      - "/usr/src/notification-service/node_modules"
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000
   postgres:
     image: postgres:12
     restart: always
