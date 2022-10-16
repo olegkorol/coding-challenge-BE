@@ -44,3 +44,24 @@
   - name: company
     using:
       foreign_key_constraint_on: company_id
+  event_triggers: # Triggered whenever a new record is added to "jobs"
+    - name: new_job_created
+      definition:
+        enable_manual: false
+        insert:
+          columns: "*"
+      retry_conf:
+        num_retries: 0
+        interval_sec: 10
+        timeout_sec: 60
+      webhook: http://host.docker.internal:3000/new-job-posting # wow, this was misleading: https://hasura.io/docs/latest/guides/docker-networking/
+- table:
+    schema: public
+    name: users
+- table:
+    schema: public
+    name: notification_subscriptions
+    object_relationships: # This does not work - need to set using Hasura's UI :D
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
