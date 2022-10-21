@@ -29,22 +29,42 @@ app.post("/new-job-posting", async (req: Request, res: Response) => {
   console.log({ newJob: event?.data?.new || "" });
   const newJobPosting: NewJobPosting = event?.data?.new;
 
-  const notification_subscriptions = await getNotificationSubscriptionsQuery();
+  if (!newJobPosting) {
+    res.status(400).send("No new job posting data provided");
+    return;
+  }
 
   const cityFilter = newJobPosting?.city?.toLowerCase() || "";
   const keywordsFilter = newJobPosting?.title?.toLowerCase()?.split(" ") || [];
 
-  const emails = await getSubscriberEmails({
-    notificationSubscriptions: notification_subscriptions,
-    cityFilter,
-    keywordsFilter,
-  });
+  try {
+    const notification_subscriptions =
+      await getNotificationSubscriptionsQuery();
 
-  await sendEmails(emails, newJobPosting);
+    const emails = await getSubscriberEmails({
+      notificationSubscriptions: notification_subscriptions,
+      cityFilter,
+      keywordsFilter,
+    });
 
-  res.send("OK");
+    await sendEmails(emails, newJobPosting);
+    res.send("OK");
+    return;
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error");
+    return;
+  }
 });
 
 app.listen(port, () => {
   console.log(`server running at port ${port}`);
+});
+
+process.on("unhandledRejection", (reason: string) => {
+  console.error(reason);
+});
+
+process.on("uncaughtException", (error: Error) => {
+  console.error("uncaughtException", error);
 });

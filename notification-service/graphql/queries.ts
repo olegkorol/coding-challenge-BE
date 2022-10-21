@@ -28,6 +28,5 @@ export async function getNotificationSubscriptionsQuery(): Promise<
   const { notification_subscriptions } = await graphql().request(
     getNotificationSubscriptions
   );
-  console.log(JSON.stringify(notification_subscriptions, null, 2));
   return notification_subscriptions;
 }
